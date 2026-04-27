@@ -1,4 +1,9 @@
-import chalk from 'chalk';
+const RESET = '\x1b[0m';
+const GREEN = '\x1b[32m';
+const YELLOW = '\x1b[33m';
+const RED = '\x1b[31m';
+const BOLD = '\x1b[1m';
+const DIM = '\x1b[2m';
 
 /**
  * Colors a task status string according to CLI status rules.
@@ -19,15 +24,15 @@ export function colorStatus(status) {
 
   const normalizedStatus = status.trim();
   if (normalizedStatus === 'done') {
-    return chalk.green(normalizedStatus);
+    return `${GREEN}${normalizedStatus}${RESET}`;
   }
 
   if (normalizedStatus === 'in-progress') {
-    return chalk.yellow(normalizedStatus);
+    return `${YELLOW}${normalizedStatus}${RESET}`;
   }
 
   if (normalizedStatus === 'todo') {
-    return chalk.red(normalizedStatus);
+    return `${RED}${normalizedStatus}${RESET}`;
   }
 
   throw new TypeError('Invalid input: status must be one of todo, in-progress, done.');
@@ -52,15 +57,15 @@ export function colorPriority(priority) {
 
   const normalizedPriority = priority.trim();
   if (normalizedPriority === 'high') {
-    return chalk.bold.red(normalizedPriority);
+    return `${BOLD}${RED}${normalizedPriority}${RESET}`;
   }
 
   if (normalizedPriority === 'medium') {
-    return chalk.bold.yellow(normalizedPriority);
+    return `${BOLD}${YELLOW}${normalizedPriority}${RESET}`;
   }
 
   if (normalizedPriority === 'low') {
-    return chalk.dim(normalizedPriority);
+    return `${DIM}${normalizedPriority}${RESET}`;
   }
 
   throw new TypeError('Invalid input: priority must be one of low, medium, high.');
