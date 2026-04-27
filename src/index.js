@@ -1,4 +1,28 @@
 import { createTaskService } from './services/taskService.js';
+import { colorPriority, colorStatus } from './utils/colors.js';
+
+function printTask(task) {
+  console.log(`ID: ${task.id}`);
+  console.log(`Title: ${task.title}`);
+  console.log(`Description: ${task.description}`);
+  console.log(`Status: ${colorStatus(task.status)}`);
+  console.log(`Priority: ${colorPriority(task.priority)}`);
+  console.log(`Created: ${task.createdAt}`);
+  console.log(`Updated: ${task.updatedAt}`);
+  console.log('');
+}
+
+function printTaskList(tasks) {
+  if (tasks.length === 0) {
+    console.log('(no tasks)');
+    console.log('');
+    return;
+  }
+
+  tasks.forEach((task) => {
+    printTask(task);
+  });
+}
 
 function runDemo() {
   const taskService = createTaskService();
@@ -18,40 +42,40 @@ function runDemo() {
     title: 'Refactor CLI help output',
     priority: 'low'
   });
-  console.log(taskOne);
-  console.log(taskTwo);
-  console.log(taskThree);
+  printTask(taskOne);
+  printTask(taskTwo);
+  printTask(taskThree);
 
   console.log('--- List all tasks ---');
-  console.log(taskService.listTasks());
+  printTaskList(taskService.listTasks());
 
   console.log('--- Update a task ---');
   const updatedTask = taskService.updateTask(taskTwo.id, {
     status: 'done',
     description: 'Script reviewed and approved'
   });
-  console.log(updatedTask);
+  printTask(updatedTask);
 
   console.log('--- Filter by status and priority ---');
   const filteredTasks = taskService.listTasks({
     status: 'todo',
     priority: 'high'
   });
-  console.log(filteredTasks);
+  printTaskList(filteredTasks);
 
   console.log('--- Sort by priority descending ---');
   const sortedByPriority = taskService.listTasks({
     sortBy: 'priority',
     order: 'desc'
   });
-  console.log(sortedByPriority);
+  printTaskList(sortedByPriority);
 
   console.log('--- Delete a task ---');
   const deletedTask = taskService.deleteTask(taskThree.id);
-  console.log(deletedTask);
+  printTask(deletedTask);
 
   console.log('--- Final list ---');
-  console.log(taskService.listTasks({ sortBy: 'createdAt', order: 'asc' }));
+  printTaskList(taskService.listTasks({ sortBy: 'createdAt', order: 'asc' }));
 }
 
 try {
