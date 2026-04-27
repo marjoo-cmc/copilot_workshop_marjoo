@@ -1,5 +1,6 @@
 const STATUS_VALUES = ['todo', 'in-progress', 'done'];
 const PRIORITY_VALUES = ['low', 'medium', 'high'];
+const DEFAULT_CATEGORY = 'general';
 
 /**
  * Validates and normalizes a task title.
@@ -113,9 +114,38 @@ export function validatePriority(priority) {
 }
 
 /**
+ * Validates a task category value.
+ * @param {unknown} category The incoming category value.
+ * @returns {string} Valid category value.
+ * @throws {TypeError} When category is not a non-empty string.
+ * @example
+ * validateCategory(undefined);
+ * // => 'general'
+ * @example
+ * validateCategory('  work  ');
+ * // => 'work'
+ */
+export function validateCategory(category) {
+  if (typeof category === 'undefined') {
+    return DEFAULT_CATEGORY;
+  }
+
+  if (typeof category !== 'string') {
+    throw new TypeError('Invalid input: category must be a string.');
+  }
+
+  const normalizedCategory = category.trim();
+  if (!normalizedCategory) {
+    throw new TypeError('Invalid input: category cannot be empty.');
+  }
+
+  return normalizedCategory;
+}
+
+/**
  * Validates and normalizes task creation input.
  * @param {unknown} input Raw task payload.
- * @returns {{ title: string, description: string, status: 'todo'|'in-progress'|'done', priority: 'low'|'medium'|'high' }} Normalized task data.
+ * @returns {{ title: string, description: string, status: 'todo'|'in-progress'|'done', priority: 'low'|'medium'|'high', category: string }} Normalized task data.
  * @throws {TypeError} When input is malformed.
  * @example
  * validateTaskInput({ title: 'Plan sprint' });
@@ -131,14 +161,15 @@ export function validateTaskInput(input) {
     title: validateTitle(input.title),
     description: validateDescription(input.description),
     status: validateStatus(input.status),
-    priority: validatePriority(input.priority)
+    priority: validatePriority(input.priority),
+    category: validateCategory(input.category)
   };
 }
 
 /**
  * Validates and normalizes task update input.
  * @param {unknown} updates Fields to update.
- * @returns {{ title?: string, description?: string, status?: 'todo'|'in-progress'|'done', priority?: 'low'|'medium'|'high' }} Normalized update patch.
+ * @returns {{ title?: string, description?: string, status?: 'todo'|'in-progress'|'done', priority?: 'low'|'medium'|'high', category?: string }} Normalized update patch.
  * @throws {TypeError} When updates are malformed or empty.
  * @example
  * validateTaskUpdateInput({ title: 'Refine plan' });
@@ -168,6 +199,10 @@ export function validateTaskUpdateInput(updates) {
     patch.priority = validatePriority(updates.priority);
   }
 
+  if (Object.prototype.hasOwnProperty.call(updates, 'category')) {
+    patch.category = validateCategory(updates.category);
+  }
+
   if (Object.keys(patch).length === 0) {
     throw new TypeError('Invalid input: at least one updatable field is required.');
   }
@@ -178,7 +213,7 @@ export function validateTaskUpdateInput(updates) {
 /**
  * Validates and normalizes task list options.
  * @param {unknown} options Filtering and sorting options.
- * @returns {{ status?: 'todo'|'in-progress'|'done', priority?: 'low'|'medium'|'high', sortBy: 'createdAt'|'priority', order: 'asc'|'desc' }} Normalized list options.
+ * @returns {{ status?: 'todo'|'in-progress'|'done', priority?: 'low'|'medium'|'high', category?: string, sortBy: 'createdAt'|'priority', order: 'asc'|'desc' }} Normalized list options.
  * @throws {TypeError} When options are malformed.
  * @example
  * validateListOptions({ status: 'todo', sortBy: 'priority', order: 'desc' });
@@ -202,6 +237,10 @@ export function validateListOptions(options) {
 
   if (Object.prototype.hasOwnProperty.call(normalizedOptions, 'priority')) {
     result.priority = validatePriority(normalizedOptions.priority);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(normalizedOptions, 'category')) {
+    result.category = validateCategory(normalizedOptions.category);
   }
 
   if (Object.prototype.hasOwnProperty.call(normalizedOptions, 'sortBy')) {

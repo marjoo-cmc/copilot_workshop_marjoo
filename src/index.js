@@ -5,6 +5,7 @@ function printTask(task) {
   console.log(`ID: ${task.id}`);
   console.log(`Title: ${task.title}`);
   console.log(`Description: ${task.description}`);
+  console.log(`Category: ${task.category}`);
   console.log(`Status: ${colorStatus(task.status)}`);
   console.log(`Priority: ${colorPriority(task.priority)}`);
   console.log(`Created: ${task.createdAt}`);
@@ -31,12 +32,14 @@ function runDemo() {
   const taskOne = taskService.createTask({
     title: 'Write project brief',
     description: 'Draft requirements for Task Manager',
-    priority: 'high'
+    priority: 'high',
+    category: 'work'
   });
   const taskTwo = taskService.createTask({
     title: 'Prepare demo script',
     status: 'in-progress',
-    priority: 'medium'
+    priority: 'medium',
+    category: 'urgent'
   });
   const taskThree = taskService.createTask({
     title: 'Refactor CLI help output',
@@ -59,9 +62,16 @@ function runDemo() {
   console.log('--- Filter by status and priority ---');
   const filteredTasks = taskService.listTasks({
     status: 'todo',
-    priority: 'high'
+    priority: 'high',
+    category: 'work'
   });
   printTaskList(filteredTasks);
+
+  console.log('--- Filter by category only ---');
+  const categoryOnlyTasks = taskService.listTasks({
+    category: 'urgent'
+  });
+  printTaskList(categoryOnlyTasks);
 
   console.log('--- Sort by priority descending ---');
   const sortedByPriority = taskService.listTasks({

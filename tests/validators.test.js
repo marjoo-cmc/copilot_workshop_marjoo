@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  validateCategory,
   validateDescription,
   validateListOptions,
   validatePriority,
@@ -58,13 +59,31 @@ test('validatePriority rejects unsupported values', () => {
   });
 });
 
+test('validateCategory returns default value when undefined', () => {
+  const result = validateCategory(undefined);
+  assert.equal(result, 'general');
+});
+
+test('validateCategory trims surrounding whitespace', () => {
+  const result = validateCategory('  work  ');
+  assert.equal(result, 'work');
+});
+
+test('validateCategory rejects empty values', () => {
+  assert.throws(() => validateCategory('   '), {
+    name: 'TypeError',
+    message: 'Invalid input: category cannot be empty.'
+  });
+});
+
 test('validateTaskInput applies defaults for optional fields', () => {
   const result = validateTaskInput({ title: 'Write docs' });
   assert.deepEqual(result, {
     title: 'Write docs',
     description: '',
     status: 'todo',
-    priority: 'medium'
+    priority: 'medium',
+    category: 'general'
   });
 });
 
@@ -82,6 +101,23 @@ test('validateTaskUpdateInput keeps only allowed update fields', () => {
   });
   assert.deepEqual(result, {
     title: 'New title'
+  });
+});
+
+test('validateTaskUpdateInput accepts category updates', () => {
+  const result = validateTaskUpdateInput({
+    category: '  personal  '
+  });
+
+  assert.deepEqual(result, {
+    category: 'personal'
+  });
+});
+
+test('validateListOptions rejects empty category values', () => {
+  assert.throws(() => validateListOptions({ category: '   ' }), {
+    name: 'TypeError',
+    message: 'Invalid input: category cannot be empty.'
   });
 });
 
@@ -104,6 +140,7 @@ test('validateListOptions validates and forwards filter fields', () => {
   const result = validateListOptions({
     status: 'in-progress',
     priority: 'high',
+    category: 'work',
     sortBy: 'priority',
     order: 'desc'
   });
@@ -111,6 +148,7 @@ test('validateListOptions validates and forwards filter fields', () => {
   assert.deepEqual(result, {
     status: 'in-progress',
     priority: 'high',
+    category: 'work',
     sortBy: 'priority',
     order: 'desc'
   });

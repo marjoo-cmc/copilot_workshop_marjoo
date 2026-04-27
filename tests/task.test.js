@@ -13,6 +13,7 @@ test('Task constructor applies defaults and normalization', () => {
   assert.equal(task.description, 'cover paths');
   assert.equal(task.status, 'todo');
   assert.equal(task.priority, 'medium');
+  assert.equal(task.category, 'general');
 });
 
 test('Task constructor rejects invalid id values', () => {
@@ -58,6 +59,14 @@ test('Task update changes selected fields and refreshes updatedAt', () => {
   assert.ok(Date.parse(task.updatedAt) > Date.parse('2000-01-01T00:00:00.000Z'));
 });
 
+test('Task update supports category changes', () => {
+  const task = new Task({ title: 'Categorize me' });
+
+  task.update({ category: 'work' });
+
+  assert.equal(task.category, 'work');
+});
+
 test('Task update rejects payloads with no updatable fields', () => {
   const task = new Task({ title: 'Any title' });
 
@@ -75,4 +84,5 @@ test('Task toJSON returns a detached plain object', () => {
 
   assert.equal(task.title, 'Serialize me');
   assert.equal(serialized.id, 'task-2');
+  assert.equal(serialized.category, 'general');
 });

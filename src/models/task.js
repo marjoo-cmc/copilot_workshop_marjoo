@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import {
+  validateCategory,
   validateDescription,
   validatePriority,
   validateStatus,
@@ -20,6 +21,7 @@ export class Task {
    * @param {string} [input.description] Task description.
    * @param {'todo'|'in-progress'|'done'} [input.status] Task status.
    * @param {'low'|'medium'|'high'} [input.priority] Task priority.
+  * @param {string} [input.category] Task category.
    * @param {string} [input.createdAt] Optional ISO timestamp.
    * @param {string} [input.updatedAt] Optional ISO timestamp.
    */
@@ -31,6 +33,7 @@ export class Task {
     this.description = normalizedInput.description;
     this.status = normalizedInput.status;
     this.priority = normalizedInput.priority;
+    this.category = normalizedInput.category;
     this.createdAt = validateTimestamp(input.createdAt, 'createdAt') ?? new Date().toISOString();
     this.updatedAt = validateTimestamp(input.updatedAt, 'updatedAt') ?? this.createdAt;
   }
@@ -59,6 +62,10 @@ export class Task {
       this.priority = validatePriority(normalizedUpdates.priority);
     }
 
+    if (Object.prototype.hasOwnProperty.call(normalizedUpdates, 'category')) {
+      this.category = validateCategory(normalizedUpdates.category);
+    }
+
     this.updatedAt = new Date().toISOString();
     return this;
   }
@@ -71,6 +78,7 @@ export class Task {
    * description: string,
    * status: 'todo'|'in-progress'|'done',
    * priority: 'low'|'medium'|'high',
+  * category: string,
    * createdAt: string,
    * updatedAt: string
    * }} JSON-safe task object.
@@ -82,6 +90,7 @@ export class Task {
       description: this.description,
       status: this.status,
       priority: this.priority,
+      category: this.category,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
     };

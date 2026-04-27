@@ -10,6 +10,7 @@
 | description | string | Yes | Defaults to empty string on create when omitted. |
 | status | 'todo' \| 'in-progress' \| 'done' | Yes | Must be one of allowed status values. Defaults to 'todo' on create. |
 | priority | 'low' \| 'medium' \| 'high' | Yes | Must be one of allowed priority values. Defaults to 'medium' on create. |
+| category | string | Yes | Trimmed, non-empty when provided. Defaults to 'general' on create. |
 | createdAt | string | Yes | Must be a valid ISO 8601 datetime string. Set at create time only. |
 | updatedAt | string | Yes | Must be a valid ISO 8601 datetime string. Set at create time and refreshed on update. |
 
@@ -24,6 +25,7 @@
 |---|---|---|---|
 | status | 'todo' \| 'in-progress' \| 'done' | No | If provided, must be one of allowed status values. |
 | priority | 'low' \| 'medium' \| 'high' | No | If provided, must be one of allowed priority values. |
+| category | string | No | If provided, must be a trimmed non-empty string. |
 
 ### SortOptions
 | Property | Type | Required | Validation rules |
@@ -54,7 +56,7 @@ src/
 ## 3. Module responsibilities
 
 - src/constants.js
-  - Exports: STATUS_VALUES, PRIORITY_VALUES, PRIORITY_RANK.
+  - Exports: STATUS_VALUES, PRIORITY_VALUES, PRIORITY_RANK, DEFAULT_CATEGORY.
   - Dependencies: none.
 
 - src/utils/date.js
@@ -62,7 +64,7 @@ src/
   - Dependencies: none.
 
 - src/utils/validate.js
-  - Exports: assertNonEmptyTitle(), assertStatus(), assertPriority(), assertFilterOptions(), assertSortOptions().
+  - Exports: assertNonEmptyTitle(), assertStatus(), assertPriority(), assertCategory(), assertFilterOptions(), assertSortOptions().
   - Dependencies: src/constants.js.
 
 - src/models/task.js
@@ -93,7 +95,7 @@ src/
 
 - ValidationError (Error)
   - Thrown by: src/utils/validate.js and src/models/task.js.
-  - Used for: invalid title, status, priority, filter options, sort options, malformed task shape.
+  - Used for: invalid title, status, priority, category, filter options, sort options, malformed task shape.
 
 - NotFoundError (Error)
   - Thrown by: src/services/task-service.js when update/delete target id does not exist.

@@ -1,13 +1,15 @@
 # Project Plan: Task Manager CLI
 
 ## 1. Project overview
-Task Manager CLI is a small Node.js 20+ command-line application for managing personal tasks in a single terminal session. Users can create, list, update, and delete tasks, then organize work by status and priority with filtering and sorting options. Data is stored in memory only, which keeps the implementation simple and ideal for a workshop exercise focused on clean structure, validation, and command handling without external dependencies.
+Task Manager CLI is a small Node.js 20+ command-line application for managing personal tasks in a single terminal session. Users can create, list, update, and delete tasks, then organize work by status, priority, and category with filtering and sorting options. Each task can optionally include a category such as work, personal, or urgent, and omitted categories default to general. Data is stored in memory only, which keeps the implementation simple and ideal for a workshop exercise focused on clean structure, validation, and command handling without external dependencies.
 
 ## 2. User stories
 1. As a user, I want to create a task so I can track work I need to do.
    - Acceptance criteria: User can run a create command with required title.
-   - Acceptance criteria: New task includes title, description, status, priority, createdAt, and updatedAt.
+   - Acceptance criteria: User can optionally provide a category during task creation.
+   - Acceptance criteria: New task includes title, description, status, priority, category, createdAt, and updatedAt.
    - Acceptance criteria: Default values are applied when optional fields are omitted.
+   - Acceptance criteria: Category defaults to general when omitted.
 
 2. As a user, I want to list all tasks so I can see my current workload.
    - Acceptance criteria: User can run a list command to display all tasks.
@@ -22,10 +24,11 @@ Task Manager CLI is a small Node.js 20+ command-line application for managing pe
    - Acceptance criteria: User can delete by task id.
    - Acceptance criteria: Deleting a non-existent id returns a clear not-found message.
 
-5. As a user, I want to filter tasks by status or priority so I can focus on relevant tasks.
+5. As a user, I want to filter tasks by status, priority, or category so I can focus on relevant tasks.
    - Acceptance criteria: User can filter by status only.
    - Acceptance criteria: User can filter by priority only.
-   - Acceptance criteria: User can combine status and priority filters.
+   - Acceptance criteria: User can filter by category only.
+   - Acceptance criteria: User can combine status, priority, and category filters.
 
 6. As a user, I want to sort tasks by priority or creation date so I can review tasks in meaningful order.
    - Acceptance criteria: User can sort by priority using a defined rank (high, medium, low).
@@ -39,6 +42,7 @@ Task Manager CLI is a small Node.js 20+ command-line application for managing pe
   - description: string
   - status: 'todo' | 'in-progress' | 'done'
   - priority: 'low' | 'medium' | 'high'
+   - category: string (defaults to 'general')
   - createdAt: string (ISO 8601 datetime)
   - updatedAt: string (ISO 8601 datetime)
 
@@ -49,6 +53,7 @@ Task Manager CLI is a small Node.js 20+ command-line application for managing pe
 - FilterOptions
   - status?: 'todo' | 'in-progress' | 'done'
   - priority?: 'low' | 'medium' | 'high'
+   - category?: string
 
 - SortOptions
   - by: 'priority' | 'createdAt'
@@ -70,17 +75,19 @@ src/
     output.js           # Console formatting for task lists and messages
   utils/
     date.js             # Timestamp helper(s)
-    validate.js         # Shared input validation helpers
+      validate.js         # Shared input validation helpers (including category)
 ```
 
 ## 5. Implementation phases
 1. Phase 1: Project scaffold and constants
    - Create file structure and module boundaries.
    - Define status/priority enums and priority ranking.
+   - Define category default value and validation constraints.
    - Add lightweight CLI usage/help output.
 
 2. Phase 2: Data model and in-memory store
    - Implement Task shape validation and task factory.
+   - Implement optional category field with default general.
    - Implement in-memory store with add/get/update/delete by id.
    - Implement deterministic id generation and timestamp updates.
 
@@ -90,7 +97,7 @@ src/
    - Implement update and delete commands with not-found handling.
 
 4. Phase 4: Filtering and sorting
-   - Add list filtering by status and priority.
+   - Add list filtering by status, priority, and category.
    - Add sorting by priority and createdAt.
    - Ensure filters and sorting can be combined.
 

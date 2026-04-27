@@ -86,7 +86,8 @@ function filterTasks(tasks, options) {
   return tasks.filter((task) => {
     const statusMatches = !options.status || task.status === options.status;
     const priorityMatches = !options.priority || task.priority === options.priority;
-    return statusMatches && priorityMatches;
+    const categoryMatches = !options.category || task.category === options.category;
+    return statusMatches && priorityMatches && categoryMatches;
   });
 }
 
